@@ -1,0 +1,27 @@
+# ---- Local case / design assets (keep out of the repo) ----
+# Drop your own logo image and STL exports in case/ — they stay local.
+case/*
+!case/README.md
+
+# Stray STL / 3D exports anywhere in the tree
+*.stl
+*.3mf
+*.step
+*.stp
+
+# ---- Arduino / build artifacts ----
+build/
+*.hex
+*.elf
+*.bin
+*.eep
+.build/
+*.lst
+*.map
+
+# ---- Editor / OS cruft ----
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*~

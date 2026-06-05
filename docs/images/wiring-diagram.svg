@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 600" font-family="Helvetica, Arial, sans-serif">
+  <style>
+    .wire { stroke: #222; stroke-width: 2; fill: none; }
+    .gnd  { stroke: #444; stroke-width: 2.5; fill: none; }
+    .lbl  { font-size: 14px; fill: #111; }
+    .pin  { font-size: 13px; fill: #0a3; font-weight: bold; }
+    .small{ font-size: 12px; fill: #333; }
+    .title{ font-size: 18px; fill: #111; font-weight: bold; }
+    .node { fill: #444; }
+  </style>
+
+  <text x="20" y="34" class="title">VibeKeyboard — wiring (Arduino Pro Micro)</text>
+
+  <!-- ===== Pro Micro board ===== -->
+  <rect x="40" y="70" width="170" height="470" rx="8" fill="#eef3ff" stroke="#3358cc" stroke-width="2"/>
+  <text x="125" y="60" text-anchor="middle" class="lbl" font-weight="bold">Arduino Pro Micro</text>
+  <text x="125" y="558" text-anchor="middle" class="small">(ATmega32U4)</text>
+  <!-- USB stub -->
+  <rect x="95" y="42" width="60" height="16" rx="3" fill="#ccc" stroke="#888"/>
+  <text x="125" y="36" text-anchor="middle" class="small">USB</text>
+
+  <!-- Pin labels (right edge of board) -->
+  <text x="200" y="115" text-anchor="end" class="pin">D2</text>
+  <text x="200" y="175" text-anchor="end" class="pin">D3</text>
+  <text x="200" y="235" text-anchor="end" class="pin">D4</text>
+  <text x="200" y="315" text-anchor="end" class="pin">D5</text>
+  <text x="200" y="375" text-anchor="end" class="pin">D6</text>
+  <text x="200" y="435" text-anchor="end" class="pin">D7</text>
+  <text x="200" y="505" text-anchor="end" class="pin">GND</text>
+
+  <!-- ===== Switches (D2/D3/D4 -> switch -> GND) ===== -->
+  <!-- Accept SW @ y=110 -->
+  <text x="400" y="92" text-anchor="middle" class="lbl">Accept switch</text>
+  <path class="wire" d="M210 110 H382"/>
+  <line class="wire" x1="382" y1="110" x2="418" y2="94"/>
+  <circle cx="382" cy="110" r="3.5" class="node"/>
+  <circle cx="418" cy="110" r="3.5" class="node"/>
+  <path class="wire" d="M418 110 H640"/>
+
+  <!-- Reject SW @ y=170 -->
+  <text x="400" y="152" text-anchor="middle" class="lbl">Reject switch</text>
+  <path class="wire" d="M210 170 H382"/>
+  <line class="wire" x1="382" y1="170" x2="418" y2="154"/>
+  <circle cx="382" cy="170" r="3.5" class="node"/>
+  <circle cx="418" cy="170" r="3.5" class="node"/>
+  <path class="wire" d="M418 170 H640"/>
+
+  <!-- Voice SW @ y=230 -->
+  <text x="400" y="212" text-anchor="middle" class="lbl">Voice switch</text>
+  <path class="wire" d="M210 230 H382"/>
+  <line class="wire" x1="382" y1="230" x2="418" y2="214"/>
+  <circle cx="382" cy="230" r="3.5" class="node"/>
+  <circle cx="418" cy="230" r="3.5" class="node"/>
+  <path class="wire" d="M418 230 H640"/>
+
+  <!-- ===== LEDs (D5/D6/D7 -> 220R -> LED -> GND) ===== -->
+  <!-- Accept LED @ y=310 -->
+  <text x="430" y="292" text-anchor="middle" class="lbl">Accept LED</text>
+  <path class="wire" d="M210 310 H300"/>
+  <rect x="300" y="301" width="70" height="18" rx="3" fill="#fff" stroke="#222"/>
+  <text x="335" y="314" text-anchor="middle" class="small">220 Ω</text>
+  <path class="wire" d="M370 310 H440"/>
+  <polygon points="440,300 440,320 466,310" fill="#222"/>
+  <line class="wire" x1="466" y1="298" x2="466" y2="322"/>
+  <line class="wire" x1="472" y1="294" x2="480" y2="286"/>
+  <line class="wire" x1="480" y1="300" x2="488" y2="292"/>
+  <path class="wire" d="M466 310 H640"/>
+
+  <!-- Reject LED @ y=370 -->
+  <text x="430" y="352" text-anchor="middle" class="lbl">Reject LED</text>
+  <path class="wire" d="M210 370 H300"/>
+  <rect x="300" y="361" width="70" height="18" rx="3" fill="#fff" stroke="#222"/>
+  <text x="335" y="374" text-anchor="middle" class="small">220 Ω</text>
+  <path class="wire" d="M370 370 H440"/>
+  <polygon points="440,360 440,380 466,370" fill="#222"/>
+  <line class="wire" x1="466" y1="358" x2="466" y2="382"/>
+  <line class="wire" x1="472" y1="354" x2="480" y2="346"/>
+  <line class="wire" x1="480" y1="360" x2="488" y2="352"/>
+  <path class="wire" d="M466 370 H640"/>
+
+  <!-- Voice LED @ y=430 -->
+  <text x="430" y="412" text-anchor="middle" class="lbl">Voice LED</text>
+  <path class="wire" d="M210 430 H300"/>
+  <rect x="300" y="421" width="70" height="18" rx="3" fill="#fff" stroke="#222"/>
+  <text x="335" y="434" text-anchor="middle" class="small">220 Ω</text>
+  <path class="wire" d="M370 430 H440"/>
+  <polygon points="440,420 440,440 466,430" fill="#222"/>
+  <line class="wire" x1="466" y1="418" x2="466" y2="442"/>
+  <line class="wire" x1="472" y1="414" x2="480" y2="406"/>
+  <line class="wire" x1="480" y1="420" x2="488" y2="412"/>
+  <path class="wire" d="M466 430 H640"/>
+
+  <!-- ===== GND bus ===== -->
+  <path class="gnd" d="M640 110 V500 H210"/>
+  <circle cx="640" cy="110" r="3.5" class="node"/>
+  <circle cx="640" cy="170" r="3.5" class="node"/>
+  <circle cx="640" cy="230" r="3.5" class="node"/>
+  <circle cx="640" cy="310" r="3.5" class="node"/>
+  <circle cx="640" cy="370" r="3.5" class="node"/>
+  <circle cx="640" cy="430" r="3.5" class="node"/>
+  <text x="655" y="305" class="small">GND bus</text>
+
+  <!-- ground symbol -->
+  <line class="gnd" x1="700" y1="500" x2="700" y2="520"/>
+  <line class="gnd" x1="640" y1="500" x2="700" y2="500"/>
+  <line class="gnd" x1="686" y1="520" x2="714" y2="520"/>
+  <line class="gnd" x1="691" y1="527" x2="709" y2="527"/>
+  <line class="gnd" x1="696" y1="534" x2="704" y2="534"/>
+
+  <!-- caption -->
+  <text x="20" y="588" class="small">Switches use the MCU's internal pull-ups (active-low) — no diodes, no button resistors. LEDs: pin → 220 Ω → LED(+) → LED(−) → GND.</text>
+</svg>

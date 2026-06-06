@@ -63,6 +63,37 @@ Set your voice app's push-to-talk hotkey to the **same** key as `VOICE_KEY` (def
 SuperWhisper (Recording key → F13), Wispr Flow (Shortcut → F13, hold mode), or macOS
 Dictation (toggle-style → pair with `VOICE_TOGGLE = true`).
 
+## Chord (two buttons at once)
+
+Pressing **Voice + Accept together** types a command — by default `/voice` + Enter, to start
+Claude Code's voice dictation. A short window distinguishes the chord from two separate taps,
+so the individual keys (F13 / Enter) are suppressed when you press both.
+
+```c
+const bool          CHORD_ENABLE    = true;
+const uint8_t       CHORD_BTN_A     = 0;        // Voice  (index in buttons[])
+const uint8_t       CHORD_BTN_B     = 1;        // Accept
+const char* const   CHORD_TEXT      = "/voice"; // typed, then Enter
+const unsigned long CHORD_WINDOW_MS = 50;       // how close together the presses must land
+```
+
+- Change `CHORD_TEXT` to type any command/snippet (e.g. `"/clear"`).
+- Do the chord on an **empty prompt** so `/voice` is read as a command, not appended to text.
+- `CHORD_WINDOW_MS` also sets the resolve delay for normal taps (50 ms ≈ imperceptible);
+  raise it if your two presses don't always register together, lower it for snappier taps.
+
+### Using it with Claude Code `/voice`
+Claude Code has built-in voice dictation (`/voice`; needs a Claude.ai login). To make the
+**Voice button** drive it, bind its push-to-talk key to **F13** in `~/.claude/keybindings.json`:
+
+```json
+{ "context": "Chat", "bindings": { "f13": "voice:pushToTalk" } }
+```
+
+Then: chord (Voice+Accept) starts `/voice`, and holding **Voice** dictates. Note F13 must be
+delivered by your terminal — if your terminal doesn't forward F13, use the default **Space**
+push-to-talk instead, or a third-party dictation app (which captures F13 globally).
+
 ## The wave animation
 
 The LEDs run a continuous brightness **wave** (via PWM), so the backlit logo flows from one

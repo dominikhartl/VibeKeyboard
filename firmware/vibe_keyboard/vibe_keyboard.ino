@@ -97,15 +97,17 @@ void writeLed(uint8_t pin, uint8_t level, float gain = 1.0f) {
 
 // Brightness of LED i for a wave whose peak travels across the LEDs over time.
 uint8_t waveLevel(uint8_t i, unsigned long now) {
-  float span = (N - 1) + 2.0f * WAVE_WIDTH;
-  float t;                                                          // 0..1 sweep position
+  float peak;
   if (WAVE_BOUNCE) {
+    // Turn around exactly AT the edge LEDs (no overshoot -> no double blink).
     float p = (now % (2UL * WAVE_PERIOD_MS)) / (float)WAVE_PERIOD_MS; // 0..2
-    t = (p < 1.0f) ? p : (2.0f - p);                                // ramp up then back down
+    float t = (p < 1.0f) ? p : (2.0f - p);                          // 0..1..0
+    peak = t * (N - 1);                                             // sweeps edge to edge
   } else {
-    t = (now % WAVE_PERIOD_MS) / (float)WAVE_PERIOD_MS;             // 0..1, wraps (one-way)
+    // One-way: flow in off one edge and out the other (margins), then wrap.
+    float t = (now % WAVE_PERIOD_MS) / (float)WAVE_PERIOD_MS;       // 0..1
+    peak = -WAVE_WIDTH + t * ((N - 1) + 2.0f * WAVE_WIDTH);
   }
-  float peak  = -WAVE_WIDTH + t * span;
   float pos   = WAVE_REVERSE ? (N - 1 - i) : i;
   float d     = fabsf(pos - peak);
   float g     = (d < WAVE_WIDTH) ? 0.5f * (1.0f + cosf(PI * d / WAVE_WIDTH)) : 0.0f;

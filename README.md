@@ -24,7 +24,7 @@ from working with Cursor, Copilot, or anything else — see [Configuration](docs
 
 - **Plug-and-play USB-HID** — the Pro Micro's ATmega32U4 emulates a real keyboard; no host software.
 - **Dead-simple electronics** — 3 switches read with internal pull-ups: **no diodes, no key matrix, no button resistors**. Only 3 resistors total (one per LED).
-- **One status LED per button** + a fully customizable boot animation.
+- **One dimmable LED per button** (PWM) running a continuous **wave** animation that flows across the backlit logo; a button press lights its LED full, then the wave resumes.
 - **Fully configurable firmware** — keys, pins, push-to-talk vs. toggle, debounce, and the LED pattern are all constants at the top of a single, heavily-commented `.ino`.
 - **No third-party libraries** — just the built-in Arduino `Keyboard` library.
 
@@ -44,12 +44,14 @@ Full list with tools: [`hardware/BOM.md`](hardware/BOM.md).
 
 | Function | Pro Micro pin |
 |----------|---------------|
-| Accept switch | `D2` → GND |
-| Reject switch | `D3` → GND |
-| Voice switch | `D4` → GND |
-| Accept LED | `D5` → 220 Ω → LED → GND |
-| Reject LED | `D6` → 220 Ω → LED → GND |
-| Voice LED | `D7` → 220 Ω → LED → GND |
+| Accept switch | `A0` → GND |
+| Reject switch | `A1` → GND |
+| Voice switch | `A2` → GND |
+| Voice LED *(left)* | `D5` (PWM) → 220 Ω → LED → GND |
+| Accept LED *(mid)* | `D6` (PWM) → 220 Ω → LED → GND |
+| Reject LED *(right)* | `D9` (PWM) → 220 Ω → LED → GND |
+
+Pins are chosen to keep I²C, SPI, UART and a spare PWM free for future add-ons — see [`docs/WIRING.md`](docs/WIRING.md).
 
 ![Wiring diagram](docs/images/wiring-diagram.svg)
 
@@ -60,7 +62,7 @@ Details and the reasoning behind it: [`docs/WIRING.md`](docs/WIRING.md).
 1. **Build it** — solder the three switches and LEDs to the Pro Micro following [`docs/ASSEMBLY.md`](docs/ASSEMBLY.md).
 2. **Flash it** — open [`firmware/vibe_keyboard/vibe_keyboard.ino`](firmware/vibe_keyboard/vibe_keyboard.ino) in the Arduino IDE and upload. Step-by-step: [`docs/FLASHING.md`](docs/FLASHING.md).
 3. **Set up voice** — bind your dictation app's push-to-talk hotkey to **F13** (or change `VOICE_KEY`). See [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
-4. **Use it** — the LEDs flash on boot. Tap **Accept**/**Reject** in your editor; hold **Voice** to dictate.
+4. **Use it** — the LEDs fade up on boot, then the wave flows. Tap **Accept**/**Reject** in your editor; hold **Voice** to dictate.
 
 ## Documentation
 

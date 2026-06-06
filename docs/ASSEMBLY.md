@@ -1,87 +1,103 @@
 # Assembly / Soldering Guide
 
-Time: ~30–45 minutes. Difficulty: beginner-friendly (7 solder joints per switch/LED group,
-all point-to-point). Read [WIRING.md](WIRING.md) first so the pin map is fresh.
+Build time ~40 min, beginner-friendly. Every connection is point-to-point — no PCB. Skim
+[WIRING.md](WIRING.md) first so the pin map is fresh.
 
-> **Safety:** A soldering iron is 300–400 °C. Work in a ventilated space, don't touch the
-> tip, and let joints cool before handling. Wear eye protection when trimming leads.
+> **Safety:** the iron tip is ~350 °C. Work in a ventilated space, tin the tip, never touch
+> the tip or fresh joints, and wear eye protection when trimming leads.
 
-## What you need
-See [`hardware/BOM.md`](../hardware/BOM.md). In short: the Pro Micro, 3 switches, 3 LEDs,
-3 × 220 Ω resistors, hookup wire, solder, and your tools.
+## Parts & tools
+Full list: [`hardware/BOM.md`](../hardware/BOM.md). Core: Pro Micro, 3 × Cherry MX switches,
+3 × LEDs, 3 × 220 Ω resistors, hookup wire, solder. Helpful: helping-hands, flush cutters,
+a multimeter for continuity.
 
-## Step 0 — Test the Pro Micro *before* soldering
-Plug the bare Pro Micro into USB. The on-board power LED should light, and your computer
-should detect a new USB device. Even better, [flash the firmware now](FLASHING.md) while the
-board is bare and easy to handle — that confirms the board and your toolchain work before
-you commit any solder.
+## Connection summary (what you're about to build)
+```
+   A0 ── Accept switch ──┐
+   A1 ── Reject switch ──┤
+   A2 ── Voice  switch ──┤
+                         ├── GND  (one shared ground bus)
+   D5 ─220Ω─▷|─ VceLED ──┤   (left)
+   D6 ─220Ω─▷|─ AccLED ──┤   (mid)
+   D9 ─220Ω─▷|─ RejLED ──┘   (right)
+        (▷| = LED, flat/short leg = cathode toward GND)
+```
+Each switch: one leg to its signal pin, the other to the GND bus.
+Each LED: signal pin → 220 Ω → LED **+** (long leg); LED **−** (short/flat) → GND bus.
 
-## Step 1 — Plan the physical layout
-Decide where the three switches sit (a row is typical: Voice · Accept · Reject). If you have
-a switch plate, perfboard, or printed case, mount the switches in it now so they stay put.
-Hand-wiring on the bench works too — just be gentle with the joints afterward.
+---
 
-Note each Cherry MX switch has **two electrical pins** (plus possibly plastic mounting
-posts). Either electrical pin can be the "signal" or the "ground" side — they're symmetric.
+## Step 0 — Test the bare Pro Micro first
+Plug it into USB. The power LED should light and the PC should detect a USB device. Best of
+all, **[flash the firmware now](FLASHING.md)** while the board is bare — on boot it fades all
+three LED pins up/down (the self-test), so you can verify everything *before* soldering, and
+the board is far easier to handle now than later.
 
-## Step 2 — Build the common GND bus
-This single wire is the shared ground for everything.
+## Step 1 — Arrange the switches
+Decide the row order (e.g. **Voice · Accept · Reject**). If you have a plate, perfboard, or
+printed case, mount the switches so they can't move. Each Cherry MX switch has **two
+electrical pins** (plus possibly plastic posts) — either electrical pin can be signal or
+ground; they're symmetric.
 
-1. Cut a wire long enough to reach all three switches and all three LED positions.
-2. Solder one end to the Pro Micro **`GND`** pin.
-3. Daisy-chain it: solder a tap to **one leg of each switch**.
-4. Keep the same bus going to where each **LED cathode (−)** will connect (Step 4).
+## Step 2 — Lay the common GND bus
+This single wire is ground for everything.
+1. Cut a wire long enough to reach all three switches and all three LED spots.
+2. Solder one end to a Pro Micro **`GND`** pad (there are several; pick a convenient one).
+3. Strip small windows along the wire and solder a tap to **one leg of each switch**.
+4. Continue the same bus toward where each **LED cathode (−)** will land (Step 4).
 
-Tip: strip small windows in a single solid-core wire rather than cutting it into pieces —
-makes a tidy continuous bus.
+Tip: a single continuous solid-core wire with stripped windows makes the tidiest bus.
 
-## Step 3 — Wire the switch signals
-For each switch, solder a wire from its **other** leg (the one not on the GND bus) to its pin:
+## Step 3 — Switch signal wires
+Solder a wire from each switch's **other** leg to its pin:
 
-| Switch | → Pro Micro pin |
-|--------|-----------------|
-| Accept | `D2` |
-| Reject | `D3` |
-| Voice  | `D4` |
+| Switch | → pin |
+|--------|-------|
+| Accept | `A0` |
+| Reject | `A1` |
+| Voice  | `A2` |
 
-## Step 4 — Wire the LEDs (mind polarity!)
-Each LED is **polarized**. Long leg = **anode (+)**, short leg / flat edge = **cathode (−)**.
+## Step 4 — LEDs (watch polarity!)
+LED legs: **long = anode (+)**, **short / flat side = cathode (−)**.
 
 For each LED:
-1. Solder one end of a **220 Ω resistor** to the Pro Micro pin (`D5` Accept, `D6` Reject,
-   `D7` Voice). Resistors are not polarized — either end is fine.
-2. Solder the resistor's other end to the LED **anode (+)** (long leg).
-3. Solder the LED **cathode (−)** (short leg) to the **GND bus**.
+1. Solder one end of a **220 Ω** resistor to the LED pin (`D5` Voice, `D6` Accept, `D9`
+   Reject — left to right). Resistors aren't polarized.
+2. Solder the resistor's free end to the LED **anode (+)**.
+3. Solder the LED **cathode (−)** to the **GND bus**.
 
-| LED | Pin → 220 Ω → anode(+) | cathode(−) → |
-|-----|------------------------|--------------|
-| Accept | `D5` | GND bus |
-| Reject | `D6` | GND bus |
-| Voice  | `D7` | GND bus |
+| LED | pin → 220 Ω → anode(+) | cathode(−) |
+|-----|------------------------|------------|
+| Voice *(left)* | `D5` | GND bus |
+| Accept *(mid)* | `D6` | GND bus |
+| Reject *(right)* | `D9` | GND bus |
+
+> The LEDs **must** be on `D5/D6/D9` (PWM pins) for the wave to dim smoothly. Any other pin
+> can only switch on/off.
 
 ## Step 5 — Inspect
-- Look for solder bridges between adjacent pins, and for cold/dull joints (reheat them).
-- *Optional, recommended:* with the board **unplugged**, set a multimeter to continuity and
-  confirm: each switch leg ↔ its pin, each GND tap ↔ `GND`, and **no** short between any
-  signal pin and GND while the switches are released.
+- Hunt for solder bridges between adjacent pads and reflow any dull/cold joints.
+- *Recommended:* with the board **unplugged**, use a multimeter on continuity to confirm
+  each switch leg ↔ its pin, each ground tap ↔ `GND`, and **no** short between any signal
+  pin and GND while switches are released.
 
 ## Step 6 — Flash & test
-1. Flash the firmware if you haven't: see [FLASHING.md](FLASHING.md).
-2. On power-up the LEDs play the **boot pattern** (chase, then a double flash). Seeing it is
-   your visual confirmation the board powered up and the firmware is running.
-3. Open any text editor and test:
-   - **Accept** → types a newline; its LED blinks during the press.
-   - **Reject** → sends `Esc`; its LED blinks during the press.
-   - **Voice** → hold it: the Voice LED stays lit the whole time and `F13` is held down;
-     release and it stops.
-4. Finally, bind your dictation app's push-to-talk hotkey to **F13** (see
-   [CONFIGURATION.md](CONFIGURATION.md)) and confirm holding Voice starts/stops dictation.
+1. [Flash the firmware](FLASHING.md) if you haven't.
+2. On power-up the three LEDs **fade up then down** (the self-test) and then settle into the
+   continuous **wave**. Seeing the wave flow is your "it works" signal.
+3. In any text editor:
+   - **Accept** → newline; its LED jumps to full during the press.
+   - **Reject** → `Esc`; its LED jumps to full during the press.
+   - **Voice** → hold it: the Voice LED stays full and `F13` is held; release to stop.
+4. Bind your dictation app's push-to-talk hotkey to **F13** ([CONFIGURATION.md](CONFIGURATION.md))
+   and confirm holding Voice starts/stops dictation.
 
 ## Troubleshooting
 | Symptom | Likely cause |
 |---------|--------------|
-| An LED never lights | LED reversed (swap legs), or `LED_ACTIVE_HIGH` wrong in firmware |
-| A button does nothing | Signal wire on wrong pin, or cold joint; recheck Step 3 |
-| A button fires constantly | Signal pin shorted to GND; look for a solder bridge |
-| Upload fails / no port | Use the double-tap-reset trick — see [FLASHING.md](FLASHING.md) |
-| Nothing at all on boot | Re-test the bare board (Step 0); check the USB cable is data-capable |
+| An LED never lights | LED reversed (swap legs), or `LED_ACTIVE_HIGH` wrong |
+| Wave steps instead of fading on one LED | that LED isn't on a PWM pin — use `D5/D6/D9` |
+| A button does nothing | signal wire on the wrong pin, or a cold joint (recheck Step 3) |
+| A button fires non-stop | signal pin shorted to GND — look for a bridge |
+| Upload fails / no port | double-tap-reset trick — see [FLASHING.md](FLASHING.md) |
+| Nothing on boot | re-test the bare board (Step 0); check the USB cable carries data |

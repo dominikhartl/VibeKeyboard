@@ -24,18 +24,20 @@ or any tool without touching the logic.
 
 ## LEDs
 
-- **One LED per button** (3 total), each on its own GPIO via a 220 Ω resistor to the GND bus.
-- **Boot:** a customizable `STARTUP_PATTERN` frame table plays once (default: chase + double
-  flash), giving a visible "it powered up and ran" signal.
-- **Normal use:** off until pressed. Each LED mirrors its button's live pressed state, so the
-  Voice LED stays lit for the whole push-to-talk hold and Accept/Reject blink on tap.
+- **One dimmable LED per button** (3 total), each on a **PWM** pin via a 220 Ω resistor to the GND bus.
+- **Boot:** a self-test fades all LEDs up then down once (confirms wiring).
+- **Normal use:** a continuous **wave** animation flows across the three LEDs (and the backlit
+  logo). Pressing a button drives its LED to full for feedback, then the wave resumes. The
+  Voice LED stays full for the whole push-to-talk hold. Tunable (speed, width, direction,
+  brightness) or disabled via `WAVE_ENABLE`.
 
 ## Hardware
 
 - **MCU:** Arduino Pro Micro (ATmega32U4, 5 V / 16 MHz), native USB-HID.
 - **Switches:** 3 × Cherry MX (any variant), read active-low with internal pull-ups —
   **no diodes, no key matrix, no external button resistors**.
-- **Pins:** switches on `D2/D3/D4`; LEDs on `D5/D6/D7`; common `GND`.
+- **Pins:** switches on `A0/A1/A2` (digital input); LEDs on `D5/D6/D9` (**PWM**, for dimming);
+  common `GND`. Chosen to keep I²C/SPI/UART/spare-PWM free for future add-ons.
 - **Passives:** 3 × 220 Ω (LEDs only).
 
 ## Firmware

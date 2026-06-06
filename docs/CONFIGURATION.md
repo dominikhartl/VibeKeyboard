@@ -1,146 +1,80 @@
 # Configuration & Remapping
 
-Everything you'd want to change lives in the **CONFIGURATION block** at the top of
+Everything tunable is in the **CONFIGURATION block** at the top of
 [`firmware/vibe_keyboard/vibe_keyboard.ino`](../firmware/vibe_keyboard/vibe_keyboard.ino).
-Edit, then re-upload ([FLASHING.md](FLASHING.md)). No logic changes needed.
+Edit, then re-upload ([FLASHING.md](FLASHING.md)).
 
-## The config constants
+## Pins
 
 ```c
-// ---- Switch pins ----
-const uint8_t PIN_ACCEPT = 2;
-const uint8_t PIN_REJECT = 3;
-const uint8_t PIN_VOICE  = 4;
+const uint8_t PIN_ACCEPT = A0;     // switches: any digital pin
+const uint8_t PIN_REJECT = A1;
+const uint8_t PIN_VOICE  = A2;
 
-// ---- LED pins (one per button) ----
-const uint8_t PIN_ACCEPT_LED = 5;
-const uint8_t PIN_REJECT_LED = 6;
-const uint8_t PIN_VOICE_LED  = 7;
-const bool    LED_ACTIVE_HIGH = true;
+const uint8_t PIN_VOICE_LED  = 5;  // D5 left  — LEDs MUST be PWM (3,5,6,9,10) to dim
+const uint8_t PIN_ACCEPT_LED = 6;  // D6 mid
+const uint8_t PIN_REJECT_LED = 9;  // D9 right
+const bool    LED_ACTIVE_HIGH = true;   // false if LEDs wired to +5V instead of GND
+```
 
-// ---- Key mappings ----
+If you move an LED, keep it on a **PWM pin (3, 5, 6, 9, 10)** or it can only switch on/off
+(the wave will step instead of fade). See [WIRING.md](WIRING.md) for why these pins.
+
+## Key mappings
+
+```c
 #define ACCEPT_KEY KEY_RETURN
 #define REJECT_KEY KEY_ESC
 #define VOICE_KEY  KEY_F13
-
-// ---- Behavior ----
-const bool          VOICE_TOGGLE = false;   // false = push-to-talk, true = toggle
-const unsigned long DEBOUNCE_MS  = 8;
+const bool VOICE_TOGGLE = false;   // false = push-to-talk hold; true = tap on/off
 ```
 
-| Constant | What it controls |
-|----------|------------------|
-| `PIN_*` | Which Pro Micro pins the switches/LEDs use. Change if you wired differently. |
-| `LED_ACTIVE_HIGH` | `true` for pin→resistor→LED→GND wiring; `false` for +5V→resistor→LED→pin. |
-| `ACCEPT_KEY` / `REJECT_KEY` | The single keystroke each taps. |
-| `VOICE_KEY` | The key held (or toggled) for dictation. |
-| `VOICE_TOGGLE` | `false` = hold-to-talk; `true` = tap-on / tap-off. |
-| `DEBOUNCE_MS` | Switch debounce window. Raise to ~15 if you get double-fires. |
+Remap for other tools (e.g. Copilot: Accept `KEY_TAB`, Reject `KEY_ESC`). Send a plain
+character with a literal, e.g. `#define ACCEPT_KEY 'y'`.
 
-## Remapping Accept / Reject for other tools
-
-The defaults (`Enter` / `Esc`) suit Claude Code in a terminal. For other workflows, change
-`ACCEPT_KEY` / `REJECT_KEY`. A few examples:
-
-| Tool | Accept | Reject |
-|------|--------|--------|
-| Claude Code (terminal) — default | `KEY_RETURN` | `KEY_ESC` |
-| GitHub Copilot (inline suggestion) | `KEY_TAB` | `KEY_ESC` |
-| Generic "yes / no" prompt | `'y'` | `'n'` |
-
-To send a **letter or digit**, just use the character literal, e.g. `#define ACCEPT_KEY 'y'`.
-
-### Sending a key combo (modifiers)
-A `#define` holds one key. For a combo like **⌘↵** (Cmd+Enter, e.g. "accept" in some
-editors), edit the press in `loop()` for that button to chord a modifier, for example:
-
-```c
-// inside the Accept branch, instead of Keyboard.write(b.key):
-Keyboard.press(KEY_LEFT_GUI);   // Cmd  (use KEY_LEFT_CTRL for Ctrl on Win/Linux)
-Keyboard.write(KEY_RETURN);
-Keyboard.release(KEY_LEFT_GUI);
-```
-
-## Common `KEY_*` constants
-
+### Common `KEY_*` constants
 | Key | Constant |
 |-----|----------|
-| Enter / Return | `KEY_RETURN` |
+| Enter | `KEY_RETURN` |
 | Escape | `KEY_ESC` |
 | Tab | `KEY_TAB` |
-| Backspace | `KEY_BACKSPACE` |
-| Space | `' '` |
-| Arrow keys | `KEY_UP_ARROW`, `KEY_DOWN_ARROW`, `KEY_LEFT_ARROW`, `KEY_RIGHT_ARROW` |
-| Modifiers | `KEY_LEFT_CTRL`, `KEY_LEFT_SHIFT`, `KEY_LEFT_ALT`, `KEY_LEFT_GUI` (⌘/Win), and `KEY_RIGHT_*` |
-| Function keys | `KEY_F1` … `KEY_F12`, and `KEY_F13` … `KEY_F24` |
-| Any letter/number | the character itself, e.g. `'a'`, `'7'` |
+| Arrows | `KEY_UP_ARROW`, `KEY_DOWN_ARROW`, `KEY_LEFT_ARROW`, `KEY_RIGHT_ARROW` |
+| Modifiers | `KEY_LEFT_CTRL`, `KEY_LEFT_SHIFT`, `KEY_LEFT_ALT`, `KEY_LEFT_GUI` (⌘/Win) |
+| Function keys | `KEY_F1`…`KEY_F12`, `KEY_F13`…`KEY_F24` |
+| Letter/number | the character, e.g. `'a'`, `'7'` |
 
-> **Note on F13–F24:** these need a reasonably recent Arduino AVR core / `Keyboard` library.
-> If your core doesn't define `KEY_F13`, update the AVR boards package, or pick a different
-> `VOICE_KEY` (see below).
+> `KEY_F13`–`KEY_F24` need a recent Arduino AVR core. If yours lacks `KEY_F13`, update the
+> AVR boards package or pick another `VOICE_KEY` (e.g. `KEY_RIGHT_ALT`).
 
-## The Voice button
+### Voice / dictation hotkey
+Set your voice app's push-to-talk hotkey to the **same** key as `VOICE_KEY` (default F13):
+SuperWhisper (Recording key → F13), Wispr Flow (Shortcut → F13, hold mode), or macOS
+Dictation (toggle-style → pair with `VOICE_TOGGLE = true`).
 
-### Push-to-talk vs. toggle
-- `VOICE_TOGGLE = false` (default): **hold** Voice to hold `VOICE_KEY` down; release to let go.
-- `VOICE_TOGGLE = true`: **tap** Voice to start (key stays held), tap again to stop.
+## The wave animation
 
-The Voice LED tracks the held state either way.
-
-### Picking `VOICE_KEY`
-`KEY_F13` is the default because **F13 does nothing on its own** (macOS and Windows leave it
-unbound), so it's a safe, dedicated hotkey for your dictation software. Alternatives:
-
-- A held modifier some apps prefer: `#define VOICE_KEY KEY_RIGHT_ALT`
-- Any other unused key/combo your voice app lets you bind.
-
-### Setting up your dictation app
-Whatever you pick for `VOICE_KEY`, set the **same** key as your voice app's push-to-talk
-hotkey:
-
-| App | Where to set the hotkey |
-|-----|-------------------------|
-| **SuperWhisper** | Settings → Recording / Modes → set the activation key to **F13** |
-| **Wispr Flow** | Settings → Shortcut → bind **F13** (use hold-to-talk mode) |
-| **macOS Dictation** | System Settings → Keyboard → Dictation → set the shortcut; note macOS Dictation is toggle-style, so pair it with `VOICE_TOGGLE = true` |
-| **Talon / others** | Bind a "speech" or "push-to-talk" command to **F13** |
-
-After binding, hold the Voice button and speak — release to stop.
-
-## Customizing the boot LED pattern
-
-The light show on power-up is a plain table you can rewrite:
+The LEDs run a continuous brightness **wave** (via PWM), so the backlit logo flows from one
+side to the other. Pressing a button drives its LED to full, then the wave resumes.
 
 ```c
-struct LedFrame { bool a; bool r; bool v; uint16_t ms; };
-const LedFrame STARTUP_PATTERN[] = {
-  {1, 0, 0, 120},   // accept on, 120 ms
-  {0, 1, 0, 120},   // reject on
-  {0, 0, 1, 120},   // voice on
-  {1, 1, 1, 150},   // all on
-  {0, 0, 0, 150},   // all off
-  {1, 1, 1, 150},
-  {0, 0, 0, 0},     // end dark
-};
+const bool          WAVE_ENABLE    = true;   // set false for plain off-until-pressed
+const unsigned long WAVE_PERIOD_MS = 1800;   // one sweep; LOWER = faster
+const bool          WAVE_REVERSE   = false;  // flip flow direction
+const float         WAVE_WIDTH     = 1.1f;   // peak softness (bigger = broader, softer)
+const uint8_t       WAVE_MIN       = 4;      // dim floor (0-255)
+const uint8_t       WAVE_MAX       = 200;    // peak brightness (0-255)
+const uint8_t       PRESS_BRIGHT   = 255;    // brightness while pressed
+const bool          GAMMA_CORRECT  = true;   // perceptual (smoother) fade
 ```
 
-Each frame is `{ acceptLED, rejectLED, voiceLED, durationMs }` — `1` = on, `0` = off. Add,
-remove, or reorder frames freely; the firmware sizes the table automatically. Examples:
+Tuning cheatsheet:
+- **Faster / slower:** lower / raise `WAVE_PERIOD_MS` (e.g. 900 = brisk, 3000 = lazy).
+- **Direction:** flip `WAVE_REVERSE`. (Physical flow follows the order the LEDs are wired;
+  arrange the LEDs left-to-right, or swap the `PIN_*_LED` lines, to match what you want.)
+- **Softer wave:** raise `WAVE_WIDTH` (e.g. 1.6). **Sharper, comet-like:** lower it (e.g. 0.7).
+- **Overall brightness:** raise/lower `WAVE_MAX`; raise `WAVE_MIN` for a glowing baseline.
+- **No animation:** set `WAVE_ENABLE = false` — LEDs then just light full while their button
+  is pressed (off otherwise).
 
-```c
-// Triple blink, all together:
-const LedFrame STARTUP_PATTERN[] = {
-  {1,1,1,150},{0,0,0,150},{1,1,1,150},{0,0,0,150},{1,1,1,150},{0,0,0,0}
-};
-
-// Slow back-and-forth sweep:
-const LedFrame STARTUP_PATTERN[] = {
-  {1,0,0,150},{0,1,0,150},{0,0,1,150},{0,1,0,150},{1,0,0,150},{0,0,0,0}
-};
-```
-
-> **Fades?** The pattern uses simple on/off so it works on any pin. `D5` and `D6` are
-> PWM-capable, so if you want brightness fades you can drive those two with `analogWrite()`
-> in a custom pattern routine. `D7` is digital-only.
-
-After any change: re-upload and watch it on the next power-up.
+The boot **self-test** (all LEDs fade up then down once) is in `setup()`; it confirms wiring
+and isn't part of the wave.

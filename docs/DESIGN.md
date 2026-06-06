@@ -46,8 +46,8 @@ or any tool without touching the logic.
 - Inline ~8 ms software debounce per button.
 - Accept/Reject fire on the debounced press edge; Voice uses `Keyboard.press`/`release`
   for true push-to-talk. A `VOICE_TOGGLE` flag offers tap-to-toggle as an alternative.
-- A uniform `Button` struct + `applyLeds()` helper (honoring `LED_ACTIVE_HIGH`) keep the
-  three channels symmetric and the loop readable.
+- A uniform `Button` struct + `writeLed()` helper (honoring `LED_ACTIVE_HIGH` and a per-LED
+  brightness trim) keep the three channels symmetric and the loop readable.
 
 ## Repository / docs
 

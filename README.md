@@ -71,7 +71,7 @@ Details and the reasoning behind it: [`docs/WIRING.md`](docs/WIRING.md).
 - [Flashing the firmware](docs/FLASHING.md)
 - [Configuration & remapping](docs/CONFIGURATION.md)
 - [Bill of materials](hardware/BOM.md)
-- [Design spec](docs/superpowers/specs/2026-06-05-vibekeyboard-design.md)
+- [Design spec](docs/DESIGN.md)
 
 ## Build your own / contributing
 

@@ -20,6 +20,18 @@ const bool    LED_ACTIVE_HIGH = true;   // false if LEDs wired to +5V instead of
 If you move an LED, keep it on a **PWM pin (3, 5, 6, 9, 10)** or it can only switch on/off
 (the wave will step instead of fade). See [WIRING.md](WIRING.md) for why these pins.
 
+### Per-LED brightness trim
+LEDs of different colors (or driven through different resistors) can look uneven. Trim each
+one independently — `1.0` = unchanged, higher = brighter (clamped at full):
+
+```c
+const float LED_GAIN_VOICE  = 1.0f;
+const float LED_GAIN_ACCEPT = 1.5f;   // Accept LED a bit brighter
+const float LED_GAIN_REJECT = 1.0f;
+```
+
+Raise a value to brighten that LED, lower it (e.g. `0.7`) to dim one that's too strong.
+
 ## Key mappings
 
 ```c
@@ -59,7 +71,8 @@ side to the other. Pressing a button drives its LED to full, then the wave resum
 ```c
 const bool          WAVE_ENABLE    = true;   // set false for plain off-until-pressed
 const unsigned long WAVE_PERIOD_MS = 1800;   // one sweep; LOWER = faster
-const bool          WAVE_REVERSE   = false;  // flip flow direction
+const bool          WAVE_BOUNCE    = true;   // true = back-and-forth; false = one-way loop
+const bool          WAVE_REVERSE   = false;  // flip the starting direction
 const float         WAVE_WIDTH     = 1.1f;   // peak softness (bigger = broader, softer)
 const uint8_t       WAVE_MIN       = 4;      // dim floor (0-255)
 const uint8_t       WAVE_MAX       = 200;    // peak brightness (0-255)
@@ -69,8 +82,9 @@ const bool          GAMMA_CORRECT  = true;   // perceptual (smoother) fade
 
 Tuning cheatsheet:
 - **Faster / slower:** lower / raise `WAVE_PERIOD_MS` (e.g. 900 = brisk, 3000 = lazy).
-- **Direction:** flip `WAVE_REVERSE`. (Physical flow follows the order the LEDs are wired;
-  arrange the LEDs left-to-right, or swap the `PIN_*_LED` lines, to match what you want.)
+- **Motion:** `WAVE_BOUNCE = true` sweeps back and forth; `false` loops one way. Flip
+  `WAVE_REVERSE` to change which side it starts from. (Physical flow follows the order the
+  LEDs are wired — arrange them left-to-right, or swap the `PIN_*_LED` lines, to match.)
 - **Softer wave:** raise `WAVE_WIDTH` (e.g. 1.6). **Sharper, comet-like:** lower it (e.g. 0.7).
 - **Overall brightness:** raise/lower `WAVE_MAX`; raise `WAVE_MIN` for a glowing baseline.
 - **No animation:** set `WAVE_ENABLE = false` — LEDs then just light full while their button

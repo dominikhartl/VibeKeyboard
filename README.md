@@ -7,7 +7,7 @@ an AI assistant:
 
 | Button | What it does | Default keystroke |
 |--------|--------------|-------------------|
-| 🎙️ **Voice** | Push-to-talk dictation (hold to talk, release to stop) | holds `F13` |
+| 🎙️ **Voice** | Push-to-talk dictation (hold to talk, release to stop) | holds `Space` |
 | ✅ **Accept** | Confirm the AI's proposed action | taps `Enter` |
 | ❌ **Reject** | Cancel / decline the AI's proposed action | taps `Esc` |
 
@@ -61,7 +61,7 @@ Details and the reasoning behind it: [`docs/WIRING.md`](docs/WIRING.md).
 
 1. **Build it** — solder the three switches and LEDs to the Pro Micro following [`docs/ASSEMBLY.md`](docs/ASSEMBLY.md).
 2. **Flash it** — open [`firmware/vibe_keyboard/vibe_keyboard.ino`](firmware/vibe_keyboard/vibe_keyboard.ino) in the Arduino IDE and upload. Step-by-step: [`docs/FLASHING.md`](docs/FLASHING.md).
-3. **Set up voice** — bind your dictation app's push-to-talk hotkey to **F13** (or change `VOICE_KEY`). See [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).
+3. **Set up voice** — Voice holds **Space**, Claude Code's built-in push-to-talk key. Tap **Voice+Accept** to run `/voice`, then hold Voice to dictate. (Prefer a global dictation app? Switch `VOICE_KEY` to `KEY_F13` — see [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md).)
 4. **Use it** — the LEDs fade up on boot, then the wave flows. Tap **Accept**/**Reject** in your editor; hold **Voice** to dictate.
 
 ## Documentation

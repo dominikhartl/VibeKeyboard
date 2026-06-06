@@ -83,7 +83,7 @@ You usually only need this the first time, or if you ever upload a broken sketch
 
 ## Verify it worked
 - The three LEDs run the **boot pattern** on power-up.
-- In a text editor: **Accept** types a newline, **Reject** sends `Esc`, **Voice** holds `F13`
+- In a text editor: **Accept** types a newline, **Reject** sends `Esc`, **Voice** holds `Space`
   while pressed (its LED stays lit).
 
 Next: [configure your keys and voice app](CONFIGURATION.md).

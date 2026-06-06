@@ -15,7 +15,7 @@ wiring, flashing, and configuration documentation — that anyone can rebuild.
 
 | Button | Default action | Rationale |
 |---|---|---|
-| **Voice Control** | Push-to-talk: hold `F13`, release to stop | F13 is unbound on macOS; bind your dictation app's PTT hotkey to it |
+| **Voice Control** | Push-to-talk: hold `Space` (Claude Code's built-in PTT), release to stop | Alternative: `KEY_F13` + a global dictation app (terminals swallow F13, so native /voice needs Space) |
 | **Accept** | Tap `Enter` | Confirms the highlighted/default action in Claude Code |
 | **Reject** | Tap `Esc` | Cancels the current action/prompt in Claude Code |
 
@@ -70,4 +70,4 @@ or any tool without touching the logic.
 2. `.gitignore` keeps `case/` binaries out while tracking `case/README.md`.
 3. Docs render and cross-links resolve on GitHub.
 4. Documented on-device smoke test: boot pattern plays; Accept→newline, Reject→Esc,
-   Voice→held F13 (LED tracks), then bind the voice app PTT to F13.
+   Voice→held Space (LED tracks); tap Voice+Accept to run /voice, then hold Voice to dictate.

@@ -37,7 +37,7 @@ Raise a value to brighten that LED, lower it (e.g. `0.7`) to dim one that's too 
 ```c
 #define ACCEPT_KEY KEY_RETURN
 #define REJECT_KEY KEY_ESC
-#define VOICE_KEY  KEY_F13
+#define VOICE_KEY  ' '            // Space = Claude Code's built-in push-to-talk key
 const bool VOICE_TOGGLE = false;   // false = push-to-talk hold; true = tap on/off
 ```
 
@@ -58,16 +58,30 @@ character with a literal, e.g. `#define ACCEPT_KEY 'y'`.
 > `KEY_F13`–`KEY_F24` need a recent Arduino AVR core. If yours lacks `KEY_F13`, update the
 > AVR boards package or pick another `VOICE_KEY` (e.g. `KEY_RIGHT_ALT`).
 
-### Voice / dictation hotkey
-Set your voice app's push-to-talk hotkey to the **same** key as `VOICE_KEY` (default F13):
-SuperWhisper (Recording key → F13), Wispr Flow (Shortcut → F13, hold mode), or macOS
-Dictation (toggle-style → pair with `VOICE_TOGGLE = true`).
+### Voice / dictation — two routes
+The Voice button just holds `VOICE_KEY`. There are two ways to use it:
+
+1. **Claude Code's built-in `/voice` (default).** `VOICE_KEY` is **Space**, which is Claude
+   Code's own push-to-talk key — so it needs no setup and works in any terminal. Enable
+   voice (run `/voice`, or the Voice+Accept chord), then **hold Voice to talk.**
+   *Trade-off:* Space is a real character, so holding the button when you're *not* in voice
+   capture will type spaces.
+
+2. **A global dictation app (any terminal/editor).** Set `VOICE_KEY = KEY_F13` and bind a
+   push-to-talk app to **F13**: SuperWhisper (Recording key → F13, hold), Wispr Flow
+   (Shortcut → F13), or macOS Dictation (toggle → pair with `VOICE_TOGGLE = true`). These
+   grab F13 as a **global** hotkey, so it works even though terminals don't forward F13 to
+   apps. F13 also never types stray characters.
+
+> **Why not F13 with Claude Code's native `/voice`?** The VSCode/most integrated terminals
+> **swallow F13** before the CLI sees it (verify with `cat` — press the key; nothing prints).
+> So F13 only works via a *global* app (route 2), and native `/voice` needs Space (route 1).
 
 ## Chord (two buttons at once)
 
 Pressing **Voice + Accept together** types a command — by default `/voice` + Enter, to start
 Claude Code's voice dictation. A short window distinguishes the chord from two separate taps,
-so the individual keys (F13 / Enter) are suppressed when you press both.
+so the individual keys (Space / Enter) are suppressed when you press both.
 
 ```c
 const bool          CHORD_ENABLE    = true;
@@ -83,16 +97,14 @@ const unsigned long CHORD_WINDOW_MS = 50;       // how close together the presse
   raise it if your two presses don't always register together, lower it for snappier taps.
 
 ### Using it with Claude Code `/voice`
-Claude Code has built-in voice dictation (`/voice`; needs a Claude.ai login). To make the
-**Voice button** drive it, bind its push-to-talk key to **F13** in `~/.claude/keybindings.json`:
+Claude Code has built-in voice dictation (`/voice`; needs a Claude.ai login) whose default
+push-to-talk key is **Space** — which is exactly what `VOICE_KEY` is set to. So the flow is:
 
-```json
-{ "context": "Chat", "bindings": { "f13": "voice:pushToTalk" } }
-```
+1. On an **empty** prompt, tap **Voice + Accept** (the chord) → `/voice` runs.
+2. **Hold Voice and talk** (it holds Space), release to insert the transcript.
 
-Then: chord (Voice+Accept) starts `/voice`, and holding **Voice** dictates. Note F13 must be
-delivered by your terminal — if your terminal doesn't forward F13, use the default **Space**
-push-to-talk instead, or a third-party dictation app (which captures F13 globally).
+No keybinding file needed — Space is the built-in default. (If you'd rather not send Space,
+use the global-dictation-app route above with `KEY_F13`.)
 
 ## The wave animation
 

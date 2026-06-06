@@ -4,7 +4,7 @@
  * Board : Arduino Pro Micro (ATmega32U4, 5V / 16MHz) — native USB-HID.
  *
  * Buttons (Cherry MX, switch -> pin and switch -> GND, read active-low):
- *   - Voice : push-to-talk. Holds VOICE_KEY (F13) while pressed.
+ *   - Voice : push-to-talk. Holds VOICE_KEY (Space) while pressed.
  *   - Accept: taps ACCEPT_KEY (Enter).
  *   - Reject: taps REJECT_KEY (Esc).
  *   - CHORD Voice+Accept (pressed together): types CHORD_TEXT + Enter
@@ -42,7 +42,10 @@ const float LED_GAIN_REJECT = 1.0f;
 // ---- Key mappings ----
 #define ACCEPT_KEY KEY_RETURN   // Claude Code: confirm
 #define REJECT_KEY KEY_ESC      // Claude Code: cancel
-#define VOICE_KEY  KEY_F13      // hold-to-talk; bind your voice tool's PTT to F13
+#define VOICE_KEY  ' '          // Space = Claude Code's built-in push-to-talk key (no
+                                // keybinding needed). Alternative: KEY_F13 + a global
+                                // dictation app (SuperWhisper/Wispr Flow) bound to F13 —
+                                // see docs/CONFIGURATION.md.
 const bool          VOICE_TOGGLE = false;  // false = push-to-talk; true = tap on/off
 const unsigned long DEBOUNCE_MS  = 8;
 

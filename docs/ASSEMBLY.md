@@ -88,9 +88,9 @@ For each LED:
 3. In any text editor:
    - **Accept** → newline; its LED jumps to full during the press.
    - **Reject** → `Esc`; its LED jumps to full during the press.
-   - **Voice** → hold it: the Voice LED stays full and `F13` is held; release to stop.
-4. Bind your dictation app's push-to-talk hotkey to **F13** ([CONFIGURATION.md](CONFIGURATION.md))
-   and confirm holding Voice starts/stops dictation.
+   - **Voice** → hold it: the Voice LED stays full and `Space` is held; release to stop.
+4. Voice dictation: tap **Voice+Accept** to run Claude Code's `/voice`, then hold **Voice**
+   to talk. (Or switch to a global app on `KEY_F13` — see [CONFIGURATION.md](CONFIGURATION.md).)
 
 ## Troubleshooting
 | Symptom | Likely cause |
